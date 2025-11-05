@@ -74,9 +74,6 @@ let initialMouseY = 0;
 
 drawShapes();
 
-// Make current x and current y var's, and a t var to check if it's just started or not
-
-
 window.addEventListener('resize', (event) => {
     resizeCanvas();
     centerShapeCoords();
@@ -111,19 +108,28 @@ canvas.addEventListener('mousemove', (event) => {
         let mouseYFinal = mouseY - origin[1];
         let mouseXInitial = initialMouseX - origin[0];
         let mouseYInitial = initialMouseY - origin[1];
-        let dTheta1 = Math.acos(
-            (mouseXFinal*mouseXInitial + mouseYFinal*mouseYInitial)/
+        let dTheta1 = Math.asin(
+            (mouseXInitial*mouseYFinal - mouseYInitial*mouseXFinal)/
             (Math.sqrt(Math.pow(mouseXFinal, 2) + Math.pow(mouseYFinal, 2))*
             Math.sqrt(Math.pow(mouseXInitial, 2) + Math.pow(mouseYInitial, 2)))
         )
+
         if (isNaN(dTheta1)) dTheta1 = 0;
-        if (mouseXFinal > mouseXInitial) {
-            theta1 += dTheta1;
-        } else theta1 -= dTheta1;
+        theta1 -= dTheta1;
         initialMouseX = event.offsetX;
         initialMouseY = event.offsetY;
         sphere1Coord[0] = origin[0] + (length1+radius1)*Math.sin(theta1);
         sphere1Coord[1] = origin[1] + (length1+radius1)*Math.cos(theta1);
+
+        if (sphere1Coord[1] < origin[1]) {
+            sphere1Coord[1] = origin[1];
+            if (sphere1Coord[0] < origin[0]) {
+                sphere1Coord[0] = origin[0] - length1 - radius1;
+            } else {
+                sphere1Coord[0] = origin[0] + length1 + radius1;
+            }
+        }
+
         ctx.clearRect(0, 0, canvas.width, canvas.height);
         drawShapes();
     }
