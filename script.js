@@ -8,10 +8,10 @@ const resizeCanvas = () => {
 
 const centerShapeCoords = () => {
     rod1Coord = [
-        [canvas.width/2 - width1/2, canvas.height/2 - length1],
-        [canvas.width/2 + width1/2, canvas.height/2 - length1],
-        [canvas.width/2 + width1/2, canvas.height/2],
-        [canvas.width/2 - width1/2, canvas.height/2]
+        [origin[0] - width1/2, origin[1]],
+        [origin[0] + width1/2, origin[1]],
+        [origin[0] + width1/2, origin[1] + length1],
+        [origin[0] - width1/2, origin[1] + length1]
     ];
     sphere1Coord = [canvas.width/2, canvas.height/2 + radius1];
     origin = [canvas.width/2, canvas.height/2 - length1];
@@ -109,26 +109,37 @@ canvas.addEventListener('mousemove', (event) => {
         let mouseXInitial = initialMouseX - origin[0];
         let mouseYInitial = initialMouseY - origin[1];
         let dTheta1 = Math.asin(
-            (mouseXInitial*mouseYFinal - mouseYInitial*mouseXFinal)/
+            (mouseYInitial*mouseXFinal - mouseXInitial*mouseYFinal)/
             (Math.sqrt(Math.pow(mouseXFinal, 2) + Math.pow(mouseYFinal, 2))*
             Math.sqrt(Math.pow(mouseXInitial, 2) + Math.pow(mouseYInitial, 2)))
         )
 
         if (isNaN(dTheta1)) dTheta1 = 0;
-        theta1 -= dTheta1;
+        console.log(dTheta1);
+        theta1 += dTheta1;
+        if (Math.abs(theta1) > Math.PI/2) {
+            theta1 = theta1 > 0 ? Math.PI/2 : -Math.PI/2;
+        }
         initialMouseX = event.offsetX;
         initialMouseY = event.offsetY;
-        sphere1Coord[0] = origin[0] + (length1+radius1)*Math.sin(theta1);
-        sphere1Coord[1] = origin[1] + (length1+radius1)*Math.cos(theta1);
-
-        if (sphere1Coord[1] < origin[1]) {
-            sphere1Coord[1] = origin[1];
-            if (sphere1Coord[0] < origin[0]) {
-                sphere1Coord[0] = origin[0] - length1 - radius1;
-            } else {
-                sphere1Coord[0] = origin[0] + length1 + radius1;
-            }
-        }
+        sphere1Coord = [
+            origin[0] + (length1+radius1)*Math.sin(theta1),
+            origin[1] + (length1+radius1)*Math.cos(theta1)
+        ];
+        rod1Coord = [
+            [
+                origin[0] - (width1/2)*Math.cos(theta1),
+                origin[1] + (width1/2)*Math.sin(theta1)
+            ], [
+                origin[0] + (width1/2)*Math.cos(theta1),
+                origin[1] - (width1/2)*Math.sin(theta1)
+            ], [
+                origin[0] + length1*Math.sin(theta1) + (width1/2)*Math.cos(theta1),
+                origin[1] + length1*Math.cos(theta1) - (width1/2)*Math.sin(theta1)
+            ], [origin[0] + length1*Math.sin(theta1) - (width1/2)*Math.cos(theta1),
+                origin[1] + length1*Math.cos(theta1) + (width1/2)*Math.sin(theta1)
+            ]
+        ]
 
         ctx.clearRect(0, 0, canvas.width, canvas.height);
         drawShapes();
