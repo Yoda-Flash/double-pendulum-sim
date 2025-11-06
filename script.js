@@ -8,20 +8,7 @@ const resizeCanvas = () => {
 
 const centerShapeCoords = () => {
     origin = [canvas.width/2, canvas.height/2 - length1];
-    rod1Coord = [
-        [origin[0] - width1/2, origin[1]],
-        [origin[0] + width1/2, origin[1]],
-        [origin[0] + width1/2, origin[1] + length1],
-        [origin[0] - width1/2, origin[1] + length1]
-    ];
-    sphere1Coord = [canvas.width/2, canvas.height/2];
-    rod2Coord = [
-        [sphere1Coord[0] - width2/2, sphere1Coord[1]],
-        [sphere1Coord[0] + width2/2, sphere1Coord[1]],
-        [sphere1Coord[0] + width2/2, sphere1Coord[1] + length2],
-        [sphere1Coord[0] - width2/2, sphere1Coord[1] + length2],
-    ];
-    sphere2Coord = [sphere1Coord[0], sphere1Coord[1] + length2];
+    moveShapes();
 }
 
 // Clockwise, starting from top left corner
@@ -121,26 +108,65 @@ const getMouseAngle = (event, origin) => {
     let dTheta = Math.asin(
         (mouseYInitial*mouseXFinal - mouseXInitial*mouseYFinal)/
         (
-            Math.sqrt(Math.pow(mouseXFinal, 2) + Math.pow(mouseYFinal, 2))*
-            Math.sqrt(Math.pow(mouseXInitial, 2) + Math.pow(mouseYInitial, 2))
+            Math.sqrt(mouseXFinal**2 + mouseYFinal**2)*
+            Math.sqrt(mouseXInitial**2 + mouseYInitial**2)
         )
     )
     if (isNaN(dTheta)) dTheta = 0;
     return dTheta;
 }
 
+const eulerStep = (DOMHighResTimeStamp, dt= 0.01) => {
+    deltaTheta = theta2 - theta1;
+    denominator1 = (mass1 + mass2)*length1 - mass2*length1*(Math.cos(deltaTheta)**2);
+    denominator2 = (length2/length1)*denominator1;
+    alpha1 = (
+        mass2*length1*(omega1**2)*Math.sin(deltaTheta)*Math.cos(deltaTheta) +
+        mass2*gravity*Math.sin(theta2)*Math.cos(deltaTheta) +
+        mass2*length2*(omega2**2)*Math.sin(deltaTheta) -
+        (mass1 + mass2)*gravity*Math.sin(theta1)
+    )/denominator1;
+    alpha2 = (
+        -mass2*length2*(omega2**2)*Math.sin(deltaTheta)*Math.cos(deltaTheta) +
+        (mass1 + mass2)*gravity*Math.sin(theta1)*Math.cos(deltaTheta) -
+        (mass1 + mass2)*length1*(omega1**2)*Math.sin(deltaTheta) -
+        (mass1 + mass2)*gravity*Math.sin(theta2)
+    )/denominator2;
+    omega1 += (alpha1*dt);
+    omega2 += (alpha2*dt);
+    theta1 += (omega1*dt);
+    theta2 += (omega2*dt);
+    moveShapes();
+    requestAnimationFrame(eulerStep);
+    if (theta1 === theta2 === omega1 === omega2 === alpha1 === alpha2 === 0) {
+        cancelAnimationFrame(eulerStep);
+    }
+}
+
 resizeCanvas();
 
 let time = 0;
-let length1 = 300;
+let gravity = 9.8;
+
+let length1 = 200;
 let width1 = 5;
 let radius1 = 25;
+let mass1 = 0.20;
 let theta1 = 0;
+let omega1 = 0;
+let alpha1 = 0;
 
-let length2 = 300;
+let length2 = 200;
 let width2 = 5;
 let radius2 = 25;
+let mass2 = 0.20;
 let theta2 = 0;
+let omega2 = 0;
+let alpha2 = 0;
+
+let deltaTheta = 0;
+let denominator1 = 0;
+let denominator2 = 0;
 
 let origin = [canvas.width/2, canvas.height/2 - length1];
 
@@ -161,7 +187,6 @@ drawShapes();
 window.addEventListener('resize', (event) => {
     resizeCanvas();
     centerShapeCoords();
-    drawShapes();
 });
 
 canvas.addEventListener('mousedown', (event) => {
@@ -191,8 +216,15 @@ canvas.addEventListener('mousedown', (event) => {
 });
 
 canvas.addEventListener('mouseup', (event) => {
+    if (isMouseDownOnShape1 || isMouseDownOnShape2) {
+        isMouseDownOnShape1 = false;
+        isMouseDownOnShape2 = false;
+        canvas.style.cursor = 'default';
+        requestAnimationFrame(eulerStep);
+    }
     isMouseDownOnShape1 = false;
     isMouseDownOnShape2 = false;
+    canvas.style.cursor = 'default';
 })
 
 canvas.addEventListener('mousemove', (event) => {
@@ -201,14 +233,16 @@ canvas.addEventListener('mousemove', (event) => {
         if (Math.abs(theta1) > Math.PI/2) {
             theta1 = theta1 > 0 ? Math.PI/2 : -Math.PI/2;
         }
+        moveShapes();
     }
     if (isMouseDownOnShape2) {
         theta2 += getMouseAngle(event, sphere1Coord);
         if (Math.abs(theta2) > Math.PI/2) {
             theta2 = theta2 > 0 ? Math.PI/2 : -Math.PI/2;
         }
+        moveShapes();
     }
-    moveShapes();
     initialMouseX = event.offsetX;
     initialMouseY = event.offsetY;
 })
+
