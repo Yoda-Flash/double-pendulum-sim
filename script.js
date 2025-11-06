@@ -1,13 +1,15 @@
 const canvas = document.getElementsByTagName("canvas")[0];
 const ctx = canvas.getContext("2d");
 
+const playPauseButton = document.getElementById("play-pause");
+
 const resizeCanvas = () => {
     canvas.width = canvas.parentElement.offsetWidth;
     canvas.height = canvas.parentElement.offsetHeight;
 }
 
 const centerShapeCoords = () => {
-    origin = [canvas.width/2, canvas.height/2 - length1];
+    origin = [canvas.width/2, canvas.height/2 - length1*lengthPixelMultiplier];
     moveShapes();
 }
 
@@ -33,8 +35,10 @@ const drawSphere = (coord, r) => {
     gradient.addColorStop(0.025, "#3abce0");
     gradient.addColorStop(0.05, "#66deff");
     gradient.addColorStop(0.25, "#e198ff");
+    gradient.addColorStop(0.3, "#f198ff");
     gradient.addColorStop(0.5, "#024eab");
-    gradient.addColorStop(0.65, "#170567")
+    gradient.addColorStop(0.6, "rgb(5,1,131)");
+    gradient.addColorStop(0.65, "#170567");
     ctx.fillStyle = gradient;
     ctx.fill();
 }
@@ -56,8 +60,8 @@ const drawShapes = () => {
 
 const moveShapes = () => {
     sphere1Coord = [
-        origin[0] + length1*Math.sin(theta1),
-        origin[1] + length1*Math.cos(theta1)
+        origin[0] + length1*lengthPixelMultiplier*Math.sin(theta1),
+        origin[1] + length1*lengthPixelMultiplier*Math.cos(theta1)
     ];
     rod1Coord = [
         [
@@ -67,11 +71,11 @@ const moveShapes = () => {
             origin[0] + (width1/2)*Math.cos(theta1),
             origin[1] - (width1/2)*Math.sin(theta1)
         ], [
-                origin[0] + length1*Math.sin(theta1) + (width1/2)*Math.cos(theta1),
-                origin[1] + length1*Math.cos(theta1) - (width1/2)*Math.sin(theta1)
+                origin[0] + length1*lengthPixelMultiplier*Math.sin(theta1) + (width1/2)*Math.cos(theta1),
+                origin[1] + length1*lengthPixelMultiplier*Math.cos(theta1) - (width1/2)*Math.sin(theta1)
         ], [
-            origin[0] + length1*Math.sin(theta1) - (width1/2)*Math.cos(theta1),
-            origin[1] + length1*Math.cos(theta1) + (width1/2)*Math.sin(theta1)
+            origin[0] + length1*lengthPixelMultiplier*Math.sin(theta1) - (width1/2)*Math.cos(theta1),
+            origin[1] + length1*lengthPixelMultiplier*Math.cos(theta1) + (width1/2)*Math.sin(theta1)
         ]
     ];
     rod2Coord = [
@@ -82,16 +86,16 @@ const moveShapes = () => {
             sphere1Coord[0] + (width2/2)*Math.cos(theta2),
             sphere1Coord[1] - (width2/2)*Math.sin(theta2)
         ], [
-                sphere1Coord[0] + length2*Math.sin(theta2) + (width2/2)*Math.cos(theta2),
-                sphere1Coord[1] + length2*Math.cos(theta2) - (width2/2)*Math.sin(theta2)
+                sphere1Coord[0] + length2*lengthPixelMultiplier*Math.sin(theta2) + (width2/2)*Math.cos(theta2),
+                sphere1Coord[1] + length2*lengthPixelMultiplier*Math.cos(theta2) - (width2/2)*Math.sin(theta2)
         ], [
-            sphere1Coord[0] + length2*Math.sin(theta2) - (width2/2)*Math.cos(theta2),
-            sphere1Coord[1] + length2*Math.cos(theta2) + (width2/2)*Math.sin(theta2)
+            sphere1Coord[0] + length2*lengthPixelMultiplier*Math.sin(theta2) - (width2/2)*Math.cos(theta2),
+            sphere1Coord[1] + length2*lengthPixelMultiplier*Math.cos(theta2) + (width2/2)*Math.sin(theta2)
         ]
     ];
     sphere2Coord = [
-        sphere1Coord[0] + length2*Math.sin(theta2),
-        sphere1Coord[1] + length2*Math.cos(theta2)
+        sphere1Coord[0] + length2*lengthPixelMultiplier*Math.sin(theta2),
+        sphere1Coord[1] + length2*lengthPixelMultiplier*Math.cos(theta2)
     ];
     ctx.clearRect(0, 0, canvas.width, canvas.height);
     drawShapes();
@@ -116,26 +120,29 @@ const getMouseAngle = (event, origin) => {
     return dTheta;
 }
 
-const eulerStep = (DOMHighResTimeStamp, dt= 0.01) => {
-    deltaTheta = theta2 - theta1;
-    denominator1 = (mass1 + mass2)*length1 - mass2*length1*(Math.cos(deltaTheta)**2);
-    denominator2 = (length2/length1)*denominator1;
+const eulerStep = (DOMHighResTimeStamp, dt= 0.025) => {
+    if (!play) {
+        return;
+    }
     alpha1 = (
-        mass2*length1*(omega1**2)*Math.sin(deltaTheta)*Math.cos(deltaTheta) +
-        mass2*gravity*Math.sin(theta2)*Math.cos(deltaTheta) +
-        mass2*length2*(omega2**2)*Math.sin(deltaTheta) -
-        (mass1 + mass2)*gravity*Math.sin(theta1)
-    )/denominator1;
-    alpha2 = (
-        -mass2*length2*(omega2**2)*Math.sin(deltaTheta)*Math.cos(deltaTheta) +
-        (mass1 + mass2)*gravity*Math.sin(theta1)*Math.cos(deltaTheta) -
-        (mass1 + mass2)*length1*(omega1**2)*Math.sin(deltaTheta) -
-        (mass1 + mass2)*gravity*Math.sin(theta2)
-    )/denominator2;
+        -gravity*(2*mass1 + mass2)*Math.sin(theta1) -
+        mass2*gravity*Math.sin(theta1 - 2*theta2) -
+        2*Math.sin(theta1 - theta2)*mass2*(omega2**2*length2 + omega1**2*length1*Math.cos(theta1 - theta2))
+    )/(length1*(2*mass1 + mass2 - mass2*Math.cos(2*theta1 - 2*theta2)));
+
+    alpha2 = (2*Math.sin(theta1 - theta2)*
+        (
+            omega1**2*length1*(mass1 + mass2) +
+            gravity*(mass1 + mass2)*Math.cos(theta1) +
+            omega2**2*length2*mass2*Math.cos(theta1 - theta2)
+        )
+    )/(length2*(2*mass1 + mass2 - mass2*Math.cos(2*theta1 - 2*theta2)));
+
     omega1 += (alpha1*dt);
     omega2 += (alpha2*dt);
     theta1 += (omega1*dt);
     theta2 += (omega2*dt);
+    // console.log(omega1, omega2)
     moveShapes();
     requestAnimationFrame(eulerStep);
     if (theta1 === theta2 === omega1 === omega2 === alpha1 === alpha2 === 0) {
@@ -145,30 +152,29 @@ const eulerStep = (DOMHighResTimeStamp, dt= 0.01) => {
 
 resizeCanvas();
 
+let play = false;
+
 let time = 0;
 let gravity = 9.8;
+let lengthPixelMultiplier = 100;
 
-let length1 = 200;
+let length1 = 2;
 let width1 = 5;
 let radius1 = 25;
-let mass1 = 0.20;
+let mass1 = 2;
 let theta1 = 0;
 let omega1 = 0;
 let alpha1 = 0;
 
-let length2 = 200;
+let length2 = 2;
 let width2 = 5;
 let radius2 = 25;
-let mass2 = 0.20;
+let mass2 = 2;
 let theta2 = 0;
 let omega2 = 0;
 let alpha2 = 0;
 
-let deltaTheta = 0;
-let denominator1 = 0;
-let denominator2 = 0;
-
-let origin = [canvas.width/2, canvas.height/2 - length1];
+let origin = [canvas.width/2, canvas.height/2 - length1*lengthPixelMultiplier];
 
 let rod1Coord = [];
 let sphere1Coord = [];
@@ -220,6 +226,8 @@ canvas.addEventListener('mouseup', (event) => {
         isMouseDownOnShape1 = false;
         isMouseDownOnShape2 = false;
         canvas.style.cursor = 'default';
+        play = true;
+        playPauseButton.src = "assets/pause.png";
         requestAnimationFrame(eulerStep);
     }
     isMouseDownOnShape1 = false;
@@ -246,3 +254,13 @@ canvas.addEventListener('mousemove', (event) => {
     initialMouseY = event.offsetY;
 })
 
+playPauseButton.onclick = () => {
+    if (play) {
+        playPauseButton.src = "assets/play.png";
+        play = false;
+    } else {
+        playPauseButton.src = "assets/pause.png";
+        play = true;
+        requestAnimationFrame(eulerStep);
+    }
+}
