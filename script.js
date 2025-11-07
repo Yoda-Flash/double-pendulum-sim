@@ -48,7 +48,7 @@ const drawSphere = (coord, r) => {
 
 const drawOrigin = () => {
     ctx.beginPath();
-    ctx.arc(origin[0], origin[1], 5, 0, 2*Math.PI, true);
+    ctx.arc(origin[0], origin[1], radiusOrigin, 0, 2*Math.PI, true);
     ctx.fillStyle = 'black';
     ctx.fill();
 }
@@ -245,6 +245,8 @@ let time = 0;
 let gravity = 9.8;
 let lengthPixelMultiplier = canvas.height/10;
 
+let radiusOrigin = 5;
+
 let length1 = 2;
 let width1 = 5;
 let radius1 = 25;
@@ -273,8 +275,9 @@ let previousAlpha1 = [0];
 let previousAlpha2 = [0];
 let stepCounter = 0;
 
-let isMouseDownOnShape1 = false;
-let isMouseDownOnShape2 = false;
+let isPointerDownOnShape1 = false;
+let isPointerDownOnShape2 = false;
+let isPointerDownOnOrigin = false;
 let initialMouseX = 0;
 let initialMouseY = 0;
 
@@ -289,56 +292,78 @@ window.addEventListener('resize', (event) => {
 canvas.addEventListener('pointerdown', (event) => {
     initialMouseX = event.offsetX;
     initialMouseY = event.offsetY;
-    let mouseDistanceFromCenter1 = Math.sqrt(
+    let pointerDistanceFromCenter1 = Math.sqrt(
         Math.pow(initialMouseX - sphere1Coord[0], 2) +
         Math.pow(initialMouseY - sphere1Coord[1], 2)
     );
-    let mouseDistanceFromCenter2 = Math.sqrt(
+    let pointerDistanceFromCenter2 = Math.sqrt(
         Math.pow(initialMouseX - sphere2Coord[0], 2) +
         Math.pow(initialMouseY - sphere2Coord[1], 2)
     );
-    if (mouseDistanceFromCenter1 <= radius1) {
-        isMouseDownOnShape1 = true;
-        isMouseDownOnShape2 = false;
+    let pointerDistanceFromOrigin = Math.sqrt(
+        Math.pow(initialMouseX - origin[0], 2) +
+        Math.pow(initialMouseY - origin[1], 2)
+    );
+    if (pointerDistanceFromCenter1 <= radius1) {
+        isPointerDownOnOrigin = false;
+        isPointerDownOnShape1 = true;
+        isPointerDownOnShape2 = false;
         canvas.style.cursor = 'pointer';
-    } else if (mouseDistanceFromCenter2 <= radius2) {
-        isMouseDownOnShape1 = false;
-        isMouseDownOnShape2 = true;
+    } else if (pointerDistanceFromCenter2 <= radius2) {
+        isPointerDownOnOrigin = false;
+        isPointerDownOnShape1 = false;
+        isPointerDownOnShape2 = true;
+        canvas.style.cursor = 'pointer';
+    } else if (isPointerDownOnOrigin <= radiusOrigin) {
+        isPointerDownOnOrigin = true;
+        isPointerDownOnShape1 = false;
+        isPointerDownOnShape2 = false;
         canvas.style.cursor = 'pointer';
     } else {
-        isMouseDownOnShape1 = false;
-        isMouseDownOnShape2 = false;
+        isPointerDownOnOrigin = false;
+        isPointerDownOnShape1 = false;
+        isPointerDownOnShape2 = false;
         canvas.style.cursor = 'default';
     }
 });
 
 canvas.addEventListener('pointerup', (event) => {
-    if (isMouseDownOnShape1 || isMouseDownOnShape2) {
-        isMouseDownOnShape1 = false;
-        isMouseDownOnShape2 = false;
+    if (isPointerDownOnShape1 || isPointerDownOnShape2) {
+        isPointerDownOnShape1 = false;
+        isPointerDownOnShape2 = false;
         canvas.style.cursor = 'default';
         play = true;
         playPauseButton.src = "assets/pause.png";
         requestAnimationFrame(eulerStep);
+    } else if (isPointerDownOnOrigin) {
+        isPointerDownOnOrigin = false;
+        canvas.style.cursor = 'default';
     }
-    isMouseDownOnShape1 = false;
-    isMouseDownOnShape2 = false;
+    isPointerDownOnShape1 = false;
+    isPointerDownOnShape2 = false;
+    isPointerDownOnOrigin = false;
     canvas.style.cursor = 'default';
 })
 
 canvas.addEventListener('pointermove', (event) => {
-    if (isMouseDownOnShape1) {
+    if (isPointerDownOnShape1) {
         theta1 += getMouseAngle(event, origin);
         // if (Math.abs(theta1) > Math.PI/2) {
         //     theta1 = theta1 > 0 ? Math.PI/2 : -Math.PI/2;
         // }
         moveShapes();
     }
-    if (isMouseDownOnShape2) {
+    if (isPointerDownOnShape2) {
         theta2 += getMouseAngle(event, sphere1Coord);
         // if (Math.abs(theta2) > Math.PI/2) {
         //     theta2 = theta2 > 0 ? Math.PI/2 : -Math.PI/2;
         // }
+        moveShapes();
+    }
+    if (isPointerDownOnOrigin) {
+        origin[0] += event.offsetX - initialMouseX;
+        origin[1] += event.offsetY - initialMouseY;
+        drawOrigin();
         moveShapes();
     }
     initialMouseX = event.offsetX;
