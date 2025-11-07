@@ -2,6 +2,9 @@ const canvas = document.getElementsByTagName("canvas")[0];
 const ctx = canvas.getContext("2d");
 
 const playPauseButton = document.getElementById("play-pause");
+const previousButton = document.getElementById("previous");
+const nextButton = document.getElementById("next");
+const resetButton = document.getElementById("reset");
 
 const resizeCanvas = () => {
     canvas.width = canvas.parentElement.offsetWidth;
@@ -120,10 +123,11 @@ const getMouseAngle = (event, origin) => {
     return dTheta;
 }
 
-const eulerStep = (DOMHighResTimeStamp, dt= 0.025) => {
+const eulerStep = (DOMHighResTimeStamp, dt= 0.01) => {
     if (!play) {
         return;
     }
+    time += dt;
     alpha1 = (
         -gravity*(2*mass1 + mass2)*Math.sin(theta1) -
         mass2*gravity*Math.sin(theta1 - 2*theta2) -
@@ -138,16 +142,79 @@ const eulerStep = (DOMHighResTimeStamp, dt= 0.025) => {
         )
     )/(length2*(2*mass1 + mass2 - mass2*Math.cos(2*theta1 - 2*theta2)));
 
-    omega1 += (alpha1*dt);
-    omega2 += (alpha2*dt);
-    theta1 += (omega1*dt);
-    theta2 += (omega2*dt);
+    previousAlpha1.unshift(alpha1);
+    if (previousAlpha1.length > 10) {
+        previousAlpha1.pop();
+    }
+
+    previousAlpha2.unshift(alpha2);
+    if (previousAlpha2.length > 10) {
+        previousAlpha2.pop();
+    }
+
+    omega1 += alpha1*dt;
+    omega2 += alpha2*dt;
+    theta1 += omega1*dt;
+    theta2 += omega2*dt;
     // console.log(omega1, omega2)
     moveShapes();
     requestAnimationFrame(eulerStep);
     if (theta1 === theta2 === omega1 === omega2 === alpha1 === alpha2 === 0) {
         cancelAnimationFrame(eulerStep);
     }
+}
+
+const previousStep = (dt = 0.01) => {
+    if (stepCounter > -previousAlpha1.length + 1) {
+        stepCounter -= 1;
+        let i = -stepCounter;
+
+        alpha1 = previousAlpha1[i];
+        alpha2 = previousAlpha2[i];
+        omega1 -= alpha1*dt;
+        omega2 -= alpha2*dt;
+        theta1 -= omega1*dt;
+        theta2 -= omega2*dt;
+        moveShapes();
+    }
+}
+
+const nextStep = (dt = 0.01) => {
+    if (stepCounter < 0) {
+        stepCounter += 1;
+        let i = -stepCounter;
+
+        alpha1 = previousAlpha1[i];
+        alpha2 = previousAlpha2[i];
+        omega1 += alpha1*dt;
+        omega2 += alpha2*dt;
+        theta1 += omega1*dt;
+        theta2 += omega2*dt;
+        moveShapes();
+    }
+}
+
+const togglePlayPause = () => {
+    if (play) {
+        playPauseButton.src = "assets/play.png";
+        play = false;
+    } else if (!play && (theta1 !== 0 || theta2 !== 0)) {
+        playPauseButton.src = "assets/pause.png";
+        play = true;
+        requestAnimationFrame(eulerStep);
+    }
+}
+
+const reset = () => {
+    theta1 = 0;
+    theta2 = 0;
+    omega1 = 0;
+    omega2 = 0;
+    alpha1 = 0;
+    alpha2 = 0;
+    play = false;
+    playPauseButton.src = "assets/play.png";
+    moveShapes();
 }
 
 resizeCanvas();
@@ -182,6 +249,10 @@ let sphere1Coord = [];
 let rod2Coord = [];
 let sphere2Coord = [];
 
+let previousAlpha1 = [0];
+let previousAlpha2 = [0];
+let stepCounter = 0;
+
 let isMouseDownOnShape1 = false;
 let isMouseDownOnShape2 = false;
 let initialMouseX = 0;
@@ -195,7 +266,7 @@ window.addEventListener('resize', (event) => {
     centerShapeCoords();
 });
 
-canvas.addEventListener('mousedown', (event) => {
+canvas.addEventListener('pointerdown', (event) => {
     initialMouseX = event.offsetX;
     initialMouseY = event.offsetY;
     let mouseDistanceFromCenter1 = Math.sqrt(
@@ -221,7 +292,7 @@ canvas.addEventListener('mousedown', (event) => {
     }
 });
 
-canvas.addEventListener('mouseup', (event) => {
+canvas.addEventListener('pointerup', (event) => {
     if (isMouseDownOnShape1 || isMouseDownOnShape2) {
         isMouseDownOnShape1 = false;
         isMouseDownOnShape2 = false;
@@ -235,7 +306,7 @@ canvas.addEventListener('mouseup', (event) => {
     canvas.style.cursor = 'default';
 })
 
-canvas.addEventListener('mousemove', (event) => {
+canvas.addEventListener('pointermove', (event) => {
     if (isMouseDownOnShape1) {
         theta1 += getMouseAngle(event, origin);
         if (Math.abs(theta1) > Math.PI/2) {
@@ -254,13 +325,22 @@ canvas.addEventListener('mousemove', (event) => {
     initialMouseY = event.offsetY;
 })
 
-playPauseButton.onclick = () => {
-    if (play) {
-        playPauseButton.src = "assets/play.png";
-        play = false;
-    } else {
-        playPauseButton.src = "assets/pause.png";
-        play = true;
-        requestAnimationFrame(eulerStep);
+document.addEventListener('keydown', (event) => {
+    if (event.key === " ") {
+        togglePlayPause();
+    } else if (event.key === "ArrowLeft") {
+        previousStep();
+    } else if (event.key === "ArrowRight") {
+        nextStep();
+    } else if (event.key === "r") {
+        reset();
     }
-}
+})
+
+playPauseButton.onclick = () => togglePlayPause();
+
+previousButton.onclick = () => previousStep();
+
+nextButton.onclick = () => nextStep();
+
+resetButton.onclick = () => reset();
