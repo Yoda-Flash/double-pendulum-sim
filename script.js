@@ -123,6 +123,11 @@ const getMouseAngle = (event, origin) => {
     return dTheta;
 }
 
+const preventNaN = () => {
+    console.log("Resetting to random omega's!");
+//     Display message here that the omega is being randomly reset to avoid infinity...
+}
+
 const eulerStep = (DOMHighResTimeStamp, dt= 0.01) => {
     if (!play) {
         return;
@@ -156,6 +161,20 @@ const eulerStep = (DOMHighResTimeStamp, dt= 0.01) => {
     omega2 += alpha2*dt;
     theta1 += omega1*dt;
     theta2 += omega2*dt;
+    // Prevent NaN!
+    if (isNaN(omega1)) {
+        omega1 = Math.random();
+        theta1 = omega1*dt;
+        preventNaN();
+    }
+    if (isNaN(omega2)) {
+        omega2 = Math.random();
+        theta2 = omega2*dt;
+        preventNaN();
+    }
+    // Help keep theta's within a circle
+    theta1 %= 2*Math.PI;
+    theta2 %= 2*Math.PI;
     // console.log(omega1, omega2)
     moveShapes();
     requestAnimationFrame(eulerStep);
@@ -220,10 +239,11 @@ const reset = () => {
 resizeCanvas();
 
 let play = false;
+let currentScale = 1;
 
 let time = 0;
 let gravity = 9.8;
-let lengthPixelMultiplier = 100;
+let lengthPixelMultiplier = canvas.height/10;
 
 let length1 = 2;
 let width1 = 5;
@@ -309,16 +329,16 @@ canvas.addEventListener('pointerup', (event) => {
 canvas.addEventListener('pointermove', (event) => {
     if (isMouseDownOnShape1) {
         theta1 += getMouseAngle(event, origin);
-        if (Math.abs(theta1) > Math.PI/2) {
-            theta1 = theta1 > 0 ? Math.PI/2 : -Math.PI/2;
-        }
+        // if (Math.abs(theta1) > Math.PI/2) {
+        //     theta1 = theta1 > 0 ? Math.PI/2 : -Math.PI/2;
+        // }
         moveShapes();
     }
     if (isMouseDownOnShape2) {
         theta2 += getMouseAngle(event, sphere1Coord);
-        if (Math.abs(theta2) > Math.PI/2) {
-            theta2 = theta2 > 0 ? Math.PI/2 : -Math.PI/2;
-        }
+        // if (Math.abs(theta2) > Math.PI/2) {
+        //     theta2 = theta2 > 0 ? Math.PI/2 : -Math.PI/2;
+        // }
         moveShapes();
     }
     initialMouseX = event.offsetX;
