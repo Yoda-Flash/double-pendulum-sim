@@ -33,15 +33,6 @@ const drawSphere = (coord, r) => {
     ctx.arc(coord[0], coord[1], r, 0, 2*Math.PI, true);
     // ctx.rect(0, 0, canvas.width, canvas.height); // To test gradient
     // let gradient = ctx.createRadialGradient(x, y, r, x - (r/2), y, r/4); // Individual circle gradient
-    let gradient = ctx.createRadialGradient(origin[0], origin[1] + origin[1]/8, r/4, origin[0] + origin[0]/4, origin[1], canvas.width)
-    gradient.addColorStop(0, "#66deff");
-    gradient.addColorStop(0.025, "#3abce0");
-    gradient.addColorStop(0.05, "#66deff");
-    gradient.addColorStop(0.25, "#e198ff");
-    gradient.addColorStop(0.3, "#f198ff");
-    gradient.addColorStop(0.5, "#024eab");
-    gradient.addColorStop(0.6, "rgb(5,1,131)");
-    gradient.addColorStop(0.65, "#170567");
     ctx.fillStyle = gradient;
     ctx.fill();
 }
@@ -51,6 +42,19 @@ const drawOrigin = () => {
     ctx.arc(origin[0], origin[1], radiusOrigin, 0, 2*Math.PI, true);
     ctx.fillStyle = 'black';
     ctx.fill();
+}
+
+const drawTrail = () => {
+    trail.unshift(sphere2Coord);
+    if (trail.length > trailLength) {
+        trail.pop();
+    }
+    for (const particle of trail) {
+        ctx.beginPath();
+        ctx.arc(particle[0], particle[1], trailRadius, 0, 2*Math.PI, true);
+        ctx.fillStyle = gradient;
+        ctx.fill();
+    }
 }
 
 const drawShapes = () => {
@@ -100,6 +104,8 @@ const moveShapes = () => {
         sphere1Coord[0] + length2*lengthPixelMultiplier*Math.sin(theta2),
         sphere1Coord[1] + length2*lengthPixelMultiplier*Math.cos(theta2)
     ];
+    // ctx.fillStyle = 'rgba(255, 255, 255, 0.05)'; //Experiment with trail using transparency
+    // ctx.fillRect(0, 0, canvas.width, canvas.height);
     ctx.clearRect(0, 0, canvas.width, canvas.height);
     drawShapes();
 }
@@ -177,6 +183,7 @@ const eulerStep = (DOMHighResTimeStamp, dt= 0.01) => {
     theta2 %= 2*Math.PI;
     // console.log(omega1, omega2)
     moveShapes();
+    drawTrail();
     requestAnimationFrame(eulerStep);
     if (theta1 === theta2 === omega1 === omega2 === alpha1 === alpha2 === 0) {
         cancelAnimationFrame(eulerStep);
@@ -231,6 +238,8 @@ const reset = () => {
     omega2 = 0;
     alpha1 = 0;
     alpha2 = 0;
+    trail = [];
+    origin = [canvas.width/2, canvas.height/2 - length1*lengthPixelMultiplier];
     play = false;
     playPauseButton.src = "assets/play.png";
     moveShapes();
@@ -280,6 +289,20 @@ let isPointerDownOnShape2 = false;
 let isPointerDownOnOrigin = false;
 let initialMouseX = 0;
 let initialMouseY = 0;
+
+let gradient = ctx.createRadialGradient(origin[0], origin[1] + origin[1]/8, radius1/4, origin[0] + origin[0]/4, origin[1], canvas.width)
+gradient.addColorStop(0, "#66deff");
+gradient.addColorStop(0.025, "#3abce0");
+gradient.addColorStop(0.05, "#66deff");
+gradient.addColorStop(0.25, "#e198ff");
+gradient.addColorStop(0.3, "#f198ff");
+gradient.addColorStop(0.5, "#024eab");
+gradient.addColorStop(0.6, "rgb(5,1,131)");
+gradient.addColorStop(0.65, "#170567");
+
+let trail = [];
+let trailLength = 200;
+let trailRadius = 1;
 
 centerShapeCoords();
 drawShapes();
