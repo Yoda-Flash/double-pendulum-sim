@@ -31,10 +31,14 @@ const drawRod = (coord) => {
 const drawSphere = (coord, r) => {
     ctx.beginPath();
     ctx.arc(coord[0], coord[1], r, 0, 2*Math.PI, true);
+    ctx.shadowColor = "rgba(0, 0, 0, 0.7";
+    ctx.shadowBlur = 10;
     // ctx.rect(0, 0, canvas.width, canvas.height); // To test gradient
     // let gradient = ctx.createRadialGradient(x, y, r, x - (r/2), y, r/4); // Individual circle gradient
     ctx.fillStyle = gradient;
     ctx.fill();
+    ctx.shadowColor = "transparent";
+    ctx.shadowBlur = 0;
 }
 
 const drawOrigin = () => {
@@ -45,16 +49,70 @@ const drawOrigin = () => {
 }
 
 const drawTrail = () => {
+    ctx.globalCompositeOperation = 'destination-over';
+    trailStreakSize.unshift(Math.random() * 2 + 0.1);
+    trailStreakSpeed.unshift([Math.random() * 2 - 1, Math.random() * 2 - 1]);
     trail.unshift(sphere2Coord);
     if (trail.length > trailLength) {
         trail.pop();
+        trailStreakSize.pop();
+        trailStreakSpeed.pop();
     }
-    for (const particle of trail) {
-        ctx.beginPath();
-        ctx.arc(particle[0], particle[1], trailRadius, 0, 2*Math.PI, true);
-        ctx.fillStyle = gradient;
-        ctx.fill();
-    }
+    // One-line Particle trail:
+    // for (const particle of trail) {
+    //     ctx.beginPath();
+    //     ctx.arc(particle[0], particle[1], trailRadius, 0, 2*Math.PI, true);
+    //     ctx.fillStyle = gradient;
+    //     ctx.fill();
+    // }
+
+    // Smooth fading curve trail:
+    // for (let i = 0; i < trail.length - 1; i++) {
+    //     ctx.beginPath();
+    //     ctx.quadraticCurveTo(trail[i][0], trail[i][1], trail[i + 1][0], trail[i + 1][1]);
+    //     ctx.lineWidth = 2;
+    //     ctx.strokeStyle = gradient;
+    //     ctx.stroke();
+    //     ctx.globalAlpha -= 0.005;
+    // }
+
+    // Bunch of particles trail
+    // for (let i = 0; i < trail.length - 1; i++) {
+    //     trail[i][0] += trailStreakSpeed[i][0];
+    //     trail[i][1] += trailStreakSpeed[i][1];
+    //     ctx.beginPath();
+    //     ctx.arc(trail[i][0], trail[i][1], trailStreakSize[i], 0, 2*Math.PI, true);
+    //     ctx.fillStyle = gradient;
+    //     ctx.fill();
+    //     ctx.globalAlpha -= 0.005;
+    // }
+
+    // Bunch of streaks trail
+    for (let i = 0; i < trail.length - 1; i++) {
+            trail[i][0] += trailStreakSpeed[i][0];
+            trail[i][1] += trailStreakSpeed[i][1];
+            ctx.beginPath();
+            ctx.arc(trail[i][0], trail[i][1], trailStreakSize[i], 0, 2*Math.PI, true);
+            ctx.fillStyle = gradient;
+            ctx.fill();
+
+            for (let j = i; (j < trail.length); j++) {
+                let dx = trail[i][0] - trail[j][0];
+                let dy = trail[i][1] - trail[j][1];
+                let distance = Math.sqrt(dx**2 + dy**2);
+                if (distance < 90) {
+                    ctx.beginPath();
+                    ctx.strokeStyle = gradient;
+                    ctx.lineWidth = trailStreakSize[i]/10;
+                    ctx.moveTo(trail[i][0], trail[i][1]);
+                    ctx.lineTo(trail[j][0], trail[j][1]);
+                    ctx.stroke();
+                }
+            }
+            ctx.globalAlpha -= 0.005;
+        }
+    ctx.globalAlpha = 1;
+    ctx.globalCompositeOperation = 'source-over';
 }
 
 const drawShapes = () => {
@@ -202,6 +260,7 @@ const previousStep = (dt = 0.01) => {
         theta1 -= omega1*dt;
         theta2 -= omega2*dt;
         moveShapes();
+        drawTrail();
     }
 }
 
@@ -217,6 +276,7 @@ const nextStep = (dt = 0.01) => {
         theta1 += omega1*dt;
         theta2 += omega2*dt;
         moveShapes();
+        drawTrail();
     }
 }
 
@@ -303,6 +363,8 @@ gradient.addColorStop(0.65, "#170567");
 let trail = [];
 let trailLength = 200;
 let trailRadius = 1;
+let trailStreakSize = [];
+let trailStreakSpeed = [];
 
 centerShapeCoords();
 drawShapes();
