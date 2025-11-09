@@ -6,6 +6,10 @@ const previousButton = document.getElementById("previous");
 const nextButton = document.getElementById("next");
 const resetButton = document.getElementById("reset");
 
+const toggleButton = document.getElementById("arrow");
+const menu = document.getElementById("menu");
+const canvasDiv = document.getElementById("canvas");
+
 const resizeCanvas = () => {
     canvas.width = canvas.parentElement.offsetWidth;
     canvas.height = canvas.parentElement.offsetHeight;
@@ -31,7 +35,7 @@ const drawRod = (coord) => {
 const drawSphere = (coord, r) => {
     ctx.beginPath();
     ctx.arc(coord[0], coord[1], r, 0, 2*Math.PI, true);
-    ctx.shadowColor = "rgba(0, 0, 0, 0.7";
+    ctx.shadowColor = "rgba(0, 0, 0, 0.5)";
     ctx.shadowBlur = 10;
     // ctx.rect(0, 0, canvas.width, canvas.height); // To test gradient
     // let gradient = ctx.createRadialGradient(x, y, r, x - (r/2), y, r/4); // Individual circle gradient
@@ -474,3 +478,17 @@ previousButton.onclick = () => previousStep();
 nextButton.onclick = () => nextStep();
 
 resetButton.onclick = () => reset();
+
+toggleButton.onclick = () => {
+    if (toggleButton.src.includes("assets/left-arrow.png")) {
+        toggleButton.src = "assets/right-arrow.png";
+        menu.style.width = "0";
+        canvasDiv.style.width = "96vw";
+    } else {
+        toggleButton.src = "assets/left-arrow.png";
+        menu.style.width = "21vw";
+        canvasDiv.style.width = "75vw";
+    }
+    resizeCanvas();
+    centerShapeCoords();
+}

@@ -5,20 +5,23 @@
     </head>
     <body>
         <div class="container">
-            <div class="row1">
+<!--            <div class="col1">-->
                 <div id="canvas">
                     <canvas>
                     </canvas>
                 </div>
-                <div id="menu">
-
+                <div id="play-pause-bar">
+                    <input type="image" src="assets/previous.png" class="play-pause-image" id="previous"  alt="previous"/>
+                    <input type="image" src="assets/play.png" class="play-pause-image" id="play-pause" alt="play-pause"/>
+                    <input type="image" src="assets/next.png" class="play-pause-image" id="next" alt="next"/>
+                    <input type="image" src="assets/reset.png" class="play-pause-image" id="reset" alt="reset"/>
                 </div>
+<!--            </div>-->
+            <div id="toggle-arrow">
+                <input type="image" src="assets/left-arrow.png" id="arrow" alt="arrow"/>
             </div>
-            <div id="play-pause-bar">
-                <input type="image" src="assets/previous.png" class="play-pause-image" id="previous"  alt="previous"/>
-                <input type="image" src="assets/play.png" class="play-pause-image" id="play-pause" alt="play-pause"/>
-                <input type="image" src="assets/next.png" class="play-pause-image" id="next" alt="next"/>
-                <input type="image" src="assets/reset.png" class="play-pause-image" id="reset" alt="reset""/>
+            <div id="menu">
+
             </div>
         </div>
         <script src="script.js"></script>
