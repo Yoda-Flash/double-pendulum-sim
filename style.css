@@ -27,19 +27,6 @@ canvas {
     height: 100%;
 }
 
-#menu {
-    height: 99.8vh;
-    margin-left: -24.9vw;
-    /*width: 24.9vw;*/
-    grid-area: menu;
-    justify-content: center;
-    align-content: center;
-    border: 0.1vh solid rgba(255, 255, 255, 0.30);
-    background: rgba(255, 255, 255, 0.20);
-    backdrop-filter: blur(10px);
-    box-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.1);
-}
-
 #toggle-arrow {
     margin-left: -29.8vw;
     justify-content: center;
@@ -51,6 +38,50 @@ canvas {
     padding-right: 1vh;
     position: absolute;
     top: 0;
+}
+
+#menu {
+    height: 99.8vh;
+    margin-left: -24.9vw;
+    width: 24.8vw;
+    grid-area: menu;
+    justify-content: center;
+    align-content: center;
+    border: 0.1vh solid rgba(255, 255, 255, 0.30);
+    background: rgba(255, 255, 255, 0.20);
+    backdrop-filter: blur(10px);
+    box-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.1);
+}
+
+#cycle-buttons {
+    width: 100%;
+    text-align: left;
+    font-family: "Itim", cursive;
+    font-size: 1.5vw;
+}
+
+.button-container {
+    margin: 10%;
+}
+
+button {
+    margin-top: 5%;
+    background: rgba(255, 255, 255, 0.20);
+    border-color: rgba(255, 255, 255, 0.30);
+    border-radius: 1vh;
+    box-shadow: 0 4px 16px 0 rgba(0, 0, 0, 0.1);
+    width: 8vw;
+    height: 5vh;
+    font-family: "Itim", cursive;
+    font-size: 1.5vw;
+}
+
+button:hover {
+    background: rgba(255, 255, 255, 0.30);
+    /*border-color: transparent;*/
+    width: 7.5vw;
+    height: 4.5vh;
+    font-size: 1.25vw;
 }
 
 #play-pause-bar {

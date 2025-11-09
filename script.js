@@ -11,6 +11,9 @@ const menu = document.getElementById("menu");
 const canvasDiv = document.getElementById("canvas");
 const toggleArrowDiv = document.getElementById("toggle-arrow");
 
+const modeButton = document.getElementById("mode");
+const trailButton = document.getElementById("trail");
+
 const resizeCanvas = () => {
     canvas.width = canvas.parentElement.offsetWidth;
     canvas.height = canvas.parentElement.offsetHeight;
@@ -63,37 +66,39 @@ const drawTrail = () => {
         trailStreakSize.pop();
         trailStreakSpeed.pop();
     }
-    // One-line Particle trail:
-    // for (const particle of trail) {
-    //     ctx.beginPath();
-    //     ctx.arc(particle[0], particle[1], trailRadius, 0, 2*Math.PI, true);
-    //     ctx.fillStyle = gradient;
-    //     ctx.fill();
-    // }
-
-    // Smooth fading curve trail:
-    // for (let i = 0; i < trail.length - 1; i++) {
-    //     ctx.beginPath();
-    //     ctx.quadraticCurveTo(trail[i][0], trail[i][1], trail[i + 1][0], trail[i + 1][1]);
-    //     ctx.lineWidth = 2;
-    //     ctx.strokeStyle = gradient;
-    //     ctx.stroke();
-    //     ctx.globalAlpha -= 0.005;
-    // }
-
-    // Bunch of particles trail
-    // for (let i = 0; i < trail.length - 1; i++) {
-    //     trail[i][0] += trailStreakSpeed[i][0];
-    //     trail[i][1] += trailStreakSpeed[i][1];
-    //     ctx.beginPath();
-    //     ctx.arc(trail[i][0], trail[i][1], trailStreakSize[i], 0, 2*Math.PI, true);
-    //     ctx.fillStyle = gradient;
-    //     ctx.fill();
-    //     ctx.globalAlpha -= 0.005;
-    // }
-
-    // Bunch of streaks trail
-    for (let i = 0; i < trail.length - 1; i++) {
+    if (trailButton.textContent === "Particle") {
+        // One-line Particle trail:
+        for (const particle of trail) {
+            ctx.beginPath();
+            ctx.arc(particle[0], particle[1], trailRadius, 0, 2*Math.PI, true);
+            ctx.fillStyle = gradient;
+            ctx.fill();
+            ctx.globalAlpha -= 0.005;
+        }
+    } else if (trailButton.textContent === "Streak") {
+        // Smooth fading curve trail:
+        for (let i = 0; i < trail.length - 1; i++) {
+            ctx.beginPath();
+            ctx.quadraticCurveTo(trail[i][0], trail[i][1], trail[i + 1][0], trail[i + 1][1]);
+            ctx.lineWidth = 2;
+            ctx.strokeStyle = gradient;
+            ctx.stroke();
+            ctx.globalAlpha -= 0.005;
+        }
+    } else if (trailButton.textContent === "Particles") {
+        // Bunch of particles trail
+        for (let i = 0; i < trail.length - 1; i++) {
+            trail[i][0] += trailStreakSpeed[i][0];
+            trail[i][1] += trailStreakSpeed[i][1];
+            ctx.beginPath();
+            ctx.arc(trail[i][0], trail[i][1], trailStreakSize[i], 0, 2*Math.PI, true);
+            ctx.fillStyle = gradient;
+            ctx.fill();
+            ctx.globalAlpha -= 0.005;
+        }
+    } else if (trailButton.textContent === "Streaks") {
+        // Bunch of streaks trail
+        for (let i = 0; i < trail.length - 1; i++) {
             trail[i][0] += trailStreakSpeed[i][0];
             trail[i][1] += trailStreakSpeed[i][1];
             ctx.beginPath();
@@ -116,6 +121,11 @@ const drawTrail = () => {
             }
             ctx.globalAlpha -= 0.005;
         }
+    }
+
+
+
+
     ctx.globalAlpha = 1;
     ctx.globalCompositeOperation = 'source-over';
 }
@@ -310,6 +320,14 @@ const reset = () => {
     moveShapes();
 }
 
+const nextItem = (index, length) => {
+    index += 1;
+    if (index >= length) {
+        index = 0;
+    }
+    return index;
+}
+
 resizeCanvas();
 
 let play = false;
@@ -370,6 +388,9 @@ let trailLength = 200;
 let trailRadius = 1;
 let trailStreakSize = [];
 let trailStreakSpeed = [];
+
+let modes = ["Normal", "Food", "Galactic"];
+let trails = ["None", "Particle", "Particles", "Streak", "Streaks"];
 
 centerShapeCoords();
 drawShapes();
@@ -484,16 +505,26 @@ toggleButton.onclick = () => {
     if (toggleButton.src.includes("assets/left-arrow.png")) {
         toggleButton.src = "assets/right-arrow.png";
         menu.style.marginLeft = "0";
+        menu.style.width = "0";
         menu.style.border = "0";
+        menu.hidden = true;
         toggleArrowDiv.style.marginLeft = '-4vw';
-        canvasDiv.style.width = "99.9vw";
+        canvasDiv.style.width = "100vw";
     } else {
         toggleButton.src = "assets/left-arrow.png";
         menu.style.marginLeft = "-24.9vw";
         menu.style.border = "0.1vh;"
+        menu.style.width = "24.8vw";
+        menu.hidden = false;
         toggleArrowDiv.style.marginLeft = '-29.8vw';
         canvasDiv.style.width = "100vw";
     }
-    resizeCanvas();
-    centerShapeCoords();
+}
+
+modeButton.onclick = () => {
+    modeButton.textContent = modes[nextItem(modes.indexOf(modeButton.textContent), modes.length)];
+}
+
+trailButton.onclick = () => {
+    trailButton.textContent = trails[nextItem(trails.indexOf(trailButton.textContent), trails.length)];
 }
