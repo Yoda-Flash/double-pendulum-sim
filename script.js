@@ -9,6 +9,7 @@ const resetButton = document.getElementById("reset");
 const toggleButton = document.getElementById("arrow");
 const menu = document.getElementById("menu");
 const canvasDiv = document.getElementById("canvas");
+const toggleArrowDiv = document.getElementById("toggle-arrow");
 
 const resizeCanvas = () => {
     canvas.width = canvas.parentElement.offsetWidth;
@@ -482,12 +483,16 @@ resetButton.onclick = () => reset();
 toggleButton.onclick = () => {
     if (toggleButton.src.includes("assets/left-arrow.png")) {
         toggleButton.src = "assets/right-arrow.png";
-        menu.style.width = "0";
-        canvasDiv.style.width = "96vw";
+        menu.style.marginLeft = "0";
+        menu.style.border = "0";
+        toggleArrowDiv.style.marginLeft = '-4vw';
+        canvasDiv.style.width = "99.9vw";
     } else {
         toggleButton.src = "assets/left-arrow.png";
-        menu.style.width = "21vw";
-        canvasDiv.style.width = "75vw";
+        menu.style.marginLeft = "-24.9vw";
+        menu.style.border = "0.1vh;"
+        toggleArrowDiv.style.marginLeft = '-29.8vw';
+        canvasDiv.style.width = "100vw";
     }
     resizeCanvas();
     centerShapeCoords();
