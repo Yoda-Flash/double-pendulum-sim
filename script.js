@@ -31,6 +31,31 @@ const theta1Slider = document.getElementById("theta1-slider");
 const theta1Value = document.getElementById("theta1");
 const theta2Slider = document.getElementById("theta2-slider");
 const theta2Value = document.getElementById("theta2");
+const omega1Slider = document.getElementById("omega1-slider");
+const omega1Value = document.getElementById("omega1");
+const omega2Slider = document.getElementById("omega2-slider");
+const omega2Value = document.getElementById("omega2");
+
+const food1Image = new Image();
+food1Image.src = "assets/food1.png";
+const food2Image = new Image();
+food2Image.src = "assets/food2.png";
+const food3Image = new Image();
+food3Image.src = "assets/food3.png";
+const food4Image = new Image();
+food4Image.src = "assets/food4.png";
+const food5Image = new Image();
+food5Image.src = "assets/food5.png";
+const food6Image = new Image();
+food6Image.src = "assets/food6.png";
+const planet1Image = new Image();
+planet1Image.src = "assets/planet1.png";
+const planet2Image = new Image();
+planet2Image.src = "assets/planet2.png";
+const planet3Image = new Image();
+planet3Image.src = "assets/planet3.png";
+const planet4Image = new Image();
+planet4Image.src = "assets/planet4.png";
 
 const resizeCanvas = () => {
     canvas.width = canvas.parentElement.offsetWidth;
@@ -141,19 +166,57 @@ const drawTrail = () => {
         }
     }
 
-
-
-
     ctx.globalAlpha = 1;
     ctx.globalCompositeOperation = 'source-over';
+}
+
+const drawFood = () => {
+    ctx.drawImage(
+        image1,
+        sphere1Coord[0] - radius1,
+        sphere1Coord[1] - radius1,
+        2*radius1,
+        2*radius1
+    );
+    ctx.drawImage(
+        image2,
+        sphere2Coord[0] - radius2,
+        sphere2Coord[1] - radius2,
+        2*radius2,
+        2*radius2
+    )
+}
+
+const drawGalactic = () => {
+    ctx.drawImage(
+        image1,
+        sphere1Coord[0] - radius1,
+        sphere1Coord[1] - radius1,
+        2*radius1,
+        2*radius1
+    );
+    ctx.drawImage(
+        image2,
+        sphere2Coord[0] - radius2,
+        sphere2Coord[1] - radius2,
+        2*radius2,
+        2*radius2
+    )
 }
 
 const drawShapes = () => {
     drawOrigin();
     drawRod(rod1Coord);
     drawRod(rod2Coord);
-    drawSphere(sphere1Coord, radius1);
-    drawSphere(sphere2Coord, radius2);
+    if (modeButton.textContent === "Normal") {
+        drawSphere(sphere1Coord, radius1);
+        drawSphere(sphere2Coord, radius2);
+    } else if (modeButton.textContent === "Food") {
+        drawFood();
+    } else if (modeButton.textContent === "Galactic") {
+        drawGalactic();
+    }
+// ctx.drawImage(food1Image, sphere1Coord[0] - radius1, sphere1Coord[1] - radius1, 2*radius1, 2*radius1);
 }
 
 const moveShapes = () => {
@@ -418,6 +481,11 @@ let trailStreakSpeed = [];
 let modes = ["Normal", "Food", "Galactic"];
 let trails = ["None", "Particle", "Particles", "Streak", "Streaks"];
 
+let foodImages = [food1Image, food2Image, food3Image, food4Image, food5Image, food6Image];
+let planetImages = [planet1Image, planet2Image, planet3Image, planet4Image];
+let image1 = food1Image;
+let image2 = food2Image;
+
 centerShapeCoords();
 drawShapes();
 
@@ -549,6 +617,19 @@ toggleButton.onclick = () => {
 
 modeButton.onclick = () => {
     modeButton.textContent = modes[nextItem(modes.indexOf(modeButton.textContent), modes.length)];
+    if (modeButton.textContent === "Food") {
+        image1 = foodImages[Math.ceil(Math.random()*foodImages.length - 1)];
+        image2 = foodImages[Math.ceil(Math.random()*foodImages.length - 1)];
+        if (image1 === image2) {
+            image2 = foodImages[Math.ceil(Math.random()*foodImages.length - 1)];
+        }
+    } else if (modeButton.textContent === "Galactic") {
+        image1 = planetImages[Math.ceil(Math.random()*planetImages.length - 1)];
+        image2 = planetImages[Math.ceil(Math.random()*planetImages.length - 1)];
+        if (image1 === image2) {
+            image2 = planetImages[Math.ceil(Math.random()*planetImages.length - 1)];
+        }
+    }
 }
 
 trailButton.onclick = () => {
@@ -660,3 +741,28 @@ theta2Value.oninput = () => {
     theta2Slider.value = theta2Value.value;
     moveShapes();
 }
+
+omega1Slider.oninput = () => {
+    omega1 = +omega1Slider.value; //"+" typecasts from string to number
+    omega1Value.value = omega1Slider.value;
+    moveShapes();
+}
+
+omega1Value.oninput = () => {
+    omega1 = +omega1Value.value;
+    omega1Slider.value = omega1Value.value;
+    moveShapes();
+}
+
+omega2Slider.oninput = () => {
+    omega2 = +omega2Slider.value;
+    omega2Value.value = omega2Slider.value;
+    moveShapes();
+}
+
+omega2Value.oninput = () => {
+    omega2 = +omega2Value.value;
+    omega2Slider.value = omega2Value.value;
+    moveShapes();
+}
+
