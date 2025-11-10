@@ -22,7 +22,7 @@
                 <input type="image" src="assets/left-arrow.png" id="arrow" alt="arrow"/>
             </div>
             <div id="menu">
-                <div id="cycle-buttons">
+                <div id="buttons">
                     <div class="button-container">
                         Mode: <br>
                         <button id="mode">Normal</button>
@@ -32,8 +32,122 @@
                         <button id="trail">None</button>
                     </div>
                 </div>
-                <div id="sliders">
-
+                <div class="slider-container">
+                    Gravity:
+                    <label>
+                        <input type="number" class="slider-value" min="0" max="500" id="gravity" value="9.8" />
+                    </label>
+                    <br>
+                    <label>
+                        <input type="range" class="slider" id="gravity-slider" min="0" max="500" value="9.8" />
+                    </label>
+                    <div class="slider-range">
+                        <span>0</span><span>500</span>
+                    </div>
+                </div>
+                <div class="slider-container">
+                    Length of Upper Rod:
+                    <label>
+                        <input type="number" class="slider-value" id="length1" min="1" max="9" value="5" />
+                    </label>
+                    <br>
+                    <label>
+                        <input type="range" class="slider" id="length1-slider" min="1" max="9" value="5" />
+                    </label>
+                    <div class="slider-range">
+                        <span>1</span><span>9</span>
+                    </div>
+                </div>
+                <div class="slider-container">
+                    Length of Lower Rod:
+                    <label>
+                        <input type="number" class="slider-value" id="length2" min="1" max="9" value="5" />
+                    </label>
+                    <br>
+                    <label>
+                        <input type="range" class="slider" id="length2-slider" min="1" max="9" value="5" />
+                    </label>
+                    <div class="slider-range">
+                        <span>1</span><span>9</span>
+                    </div>
+                </div>
+                <div class="slider-container">
+                    Radius of Upper Sphere:
+                    <label>
+                        <input type="number" class="slider-value" id="radius1" min="10" max="50" value="25" />
+                    </label>
+                    <br>
+                    <label>
+                        <input type="range" class="slider" id="radius1-slider" min="10" max="50" value="25" />
+                    </label>
+                    <div class="slider-range">
+                        <span>10</span><span>50</span>
+                    </div>
+                </div>
+                <div class="slider-container">
+                    Radius of Lower Sphere:
+                    <label>
+                        <input type="number" class="slider-value" id="radius2" min="10" max="50" value="25" />
+                    </label>
+                    <br>
+                    <label>
+                        <input type="range" class="slider" id="radius2-slider" min="10" max="50" value="25" />
+                    </label>
+                    <div class="slider-range">
+                        <span>10</span><span>50</span>
+                    </div>
+                </div>
+                <div class="slider-container">
+                    Mass of Upper Sphere:
+                    <label>
+                        <input type="number" class="slider-value" id="mass1" min="0.01" max="100" value="2" />
+                    </label>
+                    <br>
+                    <label>
+                        <input type="range" class="slider" id="mass1-slider" min="0.01" max="100" value="2" />
+                    </label>
+                    <div class="slider-range">
+                        <span>0.01</span><span>100</span>
+                    </div>
+                </div>
+                <div class="slider-container">
+                    Mass of Lower Sphere:
+                    <label>
+                        <input type="number" class="slider-value" id="mass2" min="0.01" max="100" value="2" />
+                    </label>
+                    <br>
+                    <label>
+                        <input type="range" class="slider" id="mass2-slider" min="0.01" max="100" value="2" />
+                    </label>
+                    <div class="slider-range">
+                        <span>0.01</span><span>100</span>
+                    </div>
+                </div>
+                <div class="slider-container">
+                    Angle of Upper Sphere:
+                    <label>
+                        <input type="number" class="slider-value" id="theta1" min="0" max="360" value="0" />
+                    </label>
+                    <br>
+                    <label>
+                        <input type="range" class="slider" id="theta1-slider" min="0" max="360" value="0" />
+                    </label>
+                    <div class="slider-range">
+                        <span>0</span><span>360</span>
+                    </div>
+                </div>
+                <div class="slider-container">
+                    Angle of Lower Sphere:
+                    <label>
+                        <input type="number" class="slider-value" id="theta2" min="0" max="360" value="0" />
+                    </label>
+                    <br>
+                    <label>
+                        <input type="range" class="slider" id="theta2-slider" min="0" max="360" value="0" />
+                    </label>
+                    <div class="slider-range">
+                        <span>0</span><span>360</span>
+                    </div>
                 </div>
             </div>
         </div>

@@ -13,6 +13,24 @@ const toggleArrowDiv = document.getElementById("toggle-arrow");
 
 const modeButton = document.getElementById("mode");
 const trailButton = document.getElementById("trail");
+const gravitySlider = document.getElementById("gravity-slider");
+const gravityValue = document.getElementById("gravity");
+const length1Slider = document.getElementById("length1-slider");
+const length1Value = document.getElementById("length1");
+const length2Slider = document.getElementById("length2-slider");
+const length2Value = document.getElementById("length2");
+const radius1Slider = document.getElementById("radius1-slider");
+const radius1Value = document.getElementById("radius1");
+const radius2Slider = document.getElementById("radius2-slider");
+const radius2Value = document.getElementById("radius2");
+const mass1Slider = document.getElementById("mass1-slider");
+const mass1Value = document.getElementById("mass1");
+const mass2Slider = document.getElementById("mass2-slider");
+const mass2Value = document.getElementById("mass2");
+const theta1Slider = document.getElementById("theta1-slider");
+const theta1Value = document.getElementById("theta1");
+const theta2Slider = document.getElementById("theta2-slider");
+const theta2Value = document.getElementById("theta2");
 
 const resizeCanvas = () => {
     canvas.width = canvas.parentElement.offsetWidth;
@@ -240,6 +258,7 @@ const eulerStep = (DOMHighResTimeStamp, dt= 0.01) => {
     omega2 += alpha2*dt;
     theta1 += omega1*dt;
     theta2 += omega2*dt;
+
     // Prevent NaN!
     if (isNaN(omega1)) {
         omega1 = Math.random();
@@ -307,6 +326,13 @@ const togglePlayPause = () => {
 }
 
 const reset = () => {
+    gravity = 9.8;
+    length1 = 5;
+    length2 = 5;
+    radius1 = 25;
+    radius2 = 25;
+    mass1 = 2;
+    mass2 = 2;
     theta1 = 0;
     theta2 = 0;
     omega1 = 0;
@@ -335,11 +361,11 @@ let currentScale = 1;
 
 let time = 0;
 let gravity = 9.8;
-let lengthPixelMultiplier = canvas.height/10;
+let lengthPixelMultiplier = canvas.height/20;
 
 let radiusOrigin = 5;
 
-let length1 = 2;
+let length1 = 5;
 let width1 = 5;
 let radius1 = 25;
 let mass1 = 2;
@@ -347,7 +373,7 @@ let theta1 = 0;
 let omega1 = 0;
 let alpha1 = 0;
 
-let length2 = 2;
+let length2 = 5;
 let width2 = 5;
 let radius2 = 25;
 let mass2 = 2;
@@ -527,4 +553,110 @@ modeButton.onclick = () => {
 
 trailButton.onclick = () => {
     trailButton.textContent = trails[nextItem(trails.indexOf(trailButton.textContent), trails.length)];
+}
+
+gravitySlider.oninput = () => {
+    gravity = gravitySlider.value;
+    gravityValue.value = gravity;
+}
+
+gravityValue.oninput = () => {
+    gravity = gravityValue.value;
+    gravitySlider.value = gravity;
+}
+
+length1Slider.oninput = () => {
+    length1 = length1Slider.value;
+    length1Value.value = length1;
+    moveShapes();
+}
+
+length1Value.oninput = () => {
+    length1 = length1Value.value;
+    length1Slider.value = length1;
+    moveShapes();
+}
+
+length2Slider.oninput = () => {
+    length2 = length2Slider.value;
+    length2Value.value = length2;
+    moveShapes();
+}
+
+length2Value.oninput = () => {
+    length2 = length2Value.value;
+    length2Slider.value = length2;
+    moveShapes();
+}
+
+radius1Slider.oninput = () => {
+    radius1 = radius1Slider.value;
+    radius1Value.value = radius1;
+    moveShapes();
+}
+
+radius1Value.oninput = () => {
+    radius1 = radius1Value.value;
+    radius1Slider.value = radius1;
+    moveShapes();
+}
+
+radius2Slider.oninput = () => {
+    radius2 = radius2Slider.value;
+    radius2Value.value = radius2;
+    moveShapes();
+}
+
+radius2Value.oninput = () => {
+    radius2 = radius2Value.value;
+    radius2Slider.value = radius2;
+    moveShapes();
+}
+
+mass1Slider.oninput = () => {
+    mass1 = +mass1Slider.value; //"+" typecasts from string to number
+    mass1Value.value = mass1;
+    moveShapes();
+}
+
+mass1Value.oninput = () => {
+    mass1 = +mass1Value.value;
+    mass1Slider.value = mass1;
+    moveShapes();
+}
+
+mass2Slider.oninput = () => {
+    mass2 = +mass2Slider.value;
+    mass2Value.value = mass2;
+    moveShapes();
+}
+
+mass2Value.oninput = () => {
+    mass2 = +mass2Value.value;
+    mass2Slider.value = mass2;
+    moveShapes();
+}
+
+theta1Slider.oninput = () => {
+    theta1 = +theta1Slider.value*(Math.PI/180); //"+" typecasts from string to number
+    theta1Value.value = theta1Slider.value;
+    moveShapes();
+}
+
+theta1Value.oninput = () => {
+    theta1 = +theta1Value.value*(Math.PI/180);
+    theta1Slider.value = theta1Value.value;
+    moveShapes();
+}
+
+theta2Slider.oninput = () => {
+    theta2 = +theta2Slider.value*(Math.PI/180);
+    theta2Value.value = theta2Slider.value;
+    moveShapes();
+}
+
+theta2Value.oninput = () => {
+    theta2 = +theta2Value.value*(Math.PI/180);
+    theta2Slider.value = theta2Value.value;
+    moveShapes();
 }
