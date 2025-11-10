@@ -5,6 +5,9 @@ A simulation of a double pendulum, for Hack Club Accelerate!
 
 ## How To Use
 Start by dragging either pendulum to an angle, and let go for the double pendulum to start moving!
+For better clarity, you can move the origin around as well.
+
+Observe how the values on the menu change as time goes on. 
 
 ## Playing, Pausing, Restarting, and More!
 The UI features a bar at the bottom where you can play or pause the animation, 

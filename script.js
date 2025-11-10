@@ -337,6 +337,7 @@ const eulerStep = (DOMHighResTimeStamp, dt= 0.01) => {
     theta1 %= 2*Math.PI;
     theta2 %= 2*Math.PI;
     // console.log(omega1, omega2)
+    setSlidersAndValuesToVariables();
     moveShapes();
     drawTrail();
     requestAnimationFrame(eulerStep);
@@ -402,11 +403,37 @@ const reset = () => {
     omega2 = 0;
     alpha1 = 0;
     alpha2 = 0;
+    setSlidersAndValuesToVariables();
     trail = [];
     origin = [canvas.width/2, canvas.height/2 - length1*lengthPixelMultiplier];
     play = false;
     playPauseButton.src = "assets/play.png";
     moveShapes();
+}
+
+const setSlidersAndValuesToVariables = () => {
+    gravitySlider.value = gravity;
+    gravityValue.value = gravity;
+    length1Slider.value = length1;
+    length1Value.value = length1;
+    length2Slider.value = length2;
+    length2Value.value = length2;
+    radius1Slider.value = radius1;
+    radius1Value.value = radius1;
+    radius2Slider.value = radius2;
+    radius2Value.value = radius2;
+    mass1Slider.value = mass1;
+    mass1Value.value = mass1;
+    mass2Slider.value = mass2;
+    mass2Value.value = mass2;
+    theta1Slider.value = theta1*180/Math.PI;
+    theta1Value.value = theta1*180/Math.PI;
+    theta2Slider.value = theta2*180/Math.PI;
+    theta2Value.value = theta2*180/Math.PI;
+    omega1Slider.value = omega1;
+    omega1Value.value = omega1;
+    omega2Slider.value = omega2;
+    omega2Value.value = omega2;
 }
 
 const nextItem = (index, length) => {
