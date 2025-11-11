@@ -1,4 +1,5 @@
 # Double Pendulum Simulation
+https://yoda-flash.github.io/double-pendulum-sim/
 A simulation of a double pendulum, for Hack Club Accelerate!
 
 *Note: If the alpha and omega values reach infinity, the simulation will reset to a random theta value and 0 omega, and start again.
