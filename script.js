@@ -284,8 +284,7 @@ const getMouseAngle = (event, origin) => {
 }
 
 const preventNaN = () => {
-    console.log("Resetting to random omega's!");
-//     Display message here that the omega is being randomly reset to avoid infinity...
+    alert("Resetting to random omega's because omega's now at infinity!");
 }
 
 const eulerStep = (DOMHighResTimeStamp, dt= 0.01) => {
